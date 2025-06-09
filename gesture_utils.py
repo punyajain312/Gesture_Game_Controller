@@ -1,19 +1,16 @@
 import numpy as np
 
 def count_fingers(lm_list):
-    """
-    Counts the number of fingers extended based on landmark positions.
-    """
-    tip_ids = [4, 8, 12, 16, 20]  # Thumb, Index, Middle, Ring, Pinky
+    tip_ids = [4, 8, 12, 16, 20]  
     fingers = []
 
-    # Thumb: compare x positions
+
     if lm_list[tip_ids[0]][1] > lm_list[tip_ids[0] - 1][1]:
         fingers.append(1)
     else:
         fingers.append(0)
 
-    # Fingers: compare y positions
+
     for id in range(1, 5):
         if lm_list[tip_ids[id]][2] < lm_list[tip_ids[id] - 2][2]:
             fingers.append(1)
@@ -23,9 +20,7 @@ def count_fingers(lm_list):
     return fingers.count(1)
 
 def get_hand_position(lm_list, img_width, img_height):
-    """
-    Returns the general position of the hand: 'left', 'right', 'up', 'down', 'center'
-    """
+
     cx = int(np.mean([pt[1] for pt in lm_list]))
     cy = int(np.mean([pt[2] for pt in lm_list]))
 
@@ -42,3 +37,24 @@ def get_hand_position(lm_list, img_width, img_height):
         return 'down'
     else:
         return 'center'
+
+def detect_fingers_up(lm_list):
+    tip_ids = [4, 8, 12, 16, 20]
+    finger_up = {
+        "thumb" : 0,
+        "index" : 0,
+        "middle" : 0,
+        "ring" : 0,
+        "pinky" : 0 
+    }
+
+    if lm_list[tip_ids[0]][1] > lm_list[tip_ids[0] - 1][1]:
+        finger_up['thumb'] = 1
+
+    fingers = ["index", "middle", "ring", "pinky"]
+
+    for i in range(1, 5):
+        if lm_list[tip_ids[i]][2] < lm_list[tip_ids[i] - 2][2]:
+            finger_up[fingers[i - 1]] = 1
+
+    return finger_up
